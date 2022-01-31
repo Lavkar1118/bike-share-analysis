@@ -56,6 +56,6 @@ str(Annual_data2)
 * While members bike to work, casual riders use bikes to tour the city
 * Weekend (casual) users hence might not prefer annual subscriptions
 * Company can consider introducing  weekend passes (Fri - Sun) on a monthly basis to engage casual riders 
-* Implementation of summer passes might also encourage more casual riders to purchase memberships
+* Implementation of annual summer passes might also encourage more casual riders to purchase memberships
 * A survey among (new) casual riders might help in understanding specific preferences of day passes over memberships
 
