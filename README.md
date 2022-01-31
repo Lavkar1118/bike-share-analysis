@@ -49,7 +49,7 @@ str(Annual_data2)
 ```
 * Comprehensive [dashborads](https://public.tableau.com/app/profile/lavanya.muthukumar1967/viz/CyclisticBikeShareAnalysis_16436078655310/Dashboard2#1) were created using Tableau to summarize ride trends.
 
-![Ride Trends](https://github.com/[Lavkar1118]/[bike-share-analysis]/blob/[main]/Trensds.jpg?raw=true)
+![Ride Trends](https://github.com/[Lavkar1118]/[bike-share-analysis/Trensds.jpge)
 
 
 ### Key Takeaways:
