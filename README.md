@@ -47,9 +47,9 @@ Annual_data2 <- Annual_data2 %>% filter(time_cat != "NA")
 str(Annual_data2)
 
 ```
-* Comprehensive [dashborads](https://public.tableau.com/app/profile/lavanya.muthukumar1967/viz/CyclisticBikeShareAnalysis_16436078655310/Dashboard2#1) were created using Tableau to summarize ride trends.
+* Comprehensive [dashboards](https://public.tableau.com/app/profile/lavanya.muthukumar1967/viz/CyclisticBikeShareAnalysis_16436078655310/Dashboard2#1) were created using Tableau to summarize ride trends.
 
-
+[image1]: Trends.png "Undistorted"
 
 
 ### Key Takeaways:
