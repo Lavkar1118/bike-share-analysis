@@ -4,7 +4,7 @@
 
 ### Business Tasks:
 
-* Understand how  annual members and casual riders use Cyclistic bikes differently?
+* Understand how  annual members and casual riders use Cyclistic bikes differently
 * Find insights to pitch membership proposals to casual riders
 * Collect evidence towards preferrable digital media forums to promote membership among casual riders
 
