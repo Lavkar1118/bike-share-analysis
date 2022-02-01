@@ -1,0 +1,323 @@
+---
+title: "Data_merging_&_cleaning"
+author: "Lavanya Muthukumar"
+date: "1/24/2022"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Loading the libraries
+
+```{r }
+
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(ggplot2)
+library(waldo) #compare col names across different dfs
+library(chron)#convert time in character to time object
+
+```
+
+###Loading the data (May 2020 - April 2021)
+
+```{r load data}
+May_20 <- read_csv("Combined_data/May_20.csv")
+Jun_20 <- read_csv("Combined_data/Jun_20.csv")
+Jul_20 <- read_csv("Combined_data/Jul_20.csv")
+Aug_20 <- read_csv("Combined_data/Aug_20.csv")
+Sep_20 <- read_csv("Combined_data/Sep_20.csv")
+Oct_20 <- read_csv("Combined_data/Oct_20.csv")
+Nov_20 <- read_csv("Combined_data/Nov_20.csv")
+Dec_20 <- read_csv("Combined_data/Dec_20.csv")
+Jan_21 <- read_csv("Combined_data/Jan_21.csv")
+Feb_21 <- read_csv("Combined_data/Feb_21.csv")
+Mar_21 <- read_csv("Combined_data/Mar_21.csv")
+Apr_21 <- read_csv("Combined_data/Apr_21.csv")
+
+
+
+```
+###Step 1: Checking data integrity and merging the data
+
+#The cyclistic data includes monthly ride informations in separate files. We will first look at one of the datasets and get familiarized with the column names, data types and missing values.
+
+#We will now merge the monthly data into a single file to create an annaul dataset. However,before merging the data we need to check if the column names and data types is similar across all of them.
+
+#We will remove NAs if any after merging the data
+```{r merge data}
+
+#get to know the col number, col names and data types in the df
+
+colnames(May_20)
+str(May_20)
+colSums(is.na(May_20))
+
+
+colnames(Jun_20)
+str(Jun_20)
+colSums(is.na(Jun_20))
+
+colnames(Jul_20)
+str(Jul_20)
+colSums(is.na(Jul_20))
+
+colnames(Aug_20)
+str(Aug_20)
+colSums(is.na(Aug_20))
+
+colnames(Sep_20)
+str(Sep_20)
+colSums(is.na(Sep_20))
+
+colnames(Oct_20)
+str(Oct_20)
+colSums(is.na(Oct_20))
+
+colnames(Nov_20)
+str(Nov_20)
+colSums(is.na(Nov_20))
+
+colnames(Dec_20)
+str(Dec_20)
+colSums(is.na(Dec_20))
+
+colnames(Jan_21)
+str(Jan_21)
+colSums(is.na(Jan_21))
+
+colnames(Feb_21)
+str(Feb_21)
+colSums(is.na(Feb_21))
+
+colnames(Mar_21)
+str(Mar_21)
+colSums(is.na(Mar_21))
+
+colnames(Apr_21)
+str(Apr_21)
+colSums(is.na(Apr_21))
+
+
+#create list of all dfs
+
+df_list <- list(May_20, Jun_20, Jul_20, Aug_20, Sep_20, Oct_20, Nov_20, Dec_20, Jan_21, Feb_21,Mar_21, Apr_21 )
+
+##Define a function to get variable names and types
+my_function_1 <- function(data_frame){
+  require(dplyr)
+  x <- tibble(`var_name` = colnames(data_frame),
+              `var_type` = sapply(data_frame, class))
+  return(x)
+}
+
+#storing the result in a separate df
+
+col_verification <- lapply(1:length(df_list),function(i)my_function_1(df_list[[i]]) %>% 
+mutate(element =i)) %>%
+  bind_rows() %>%
+  spread(element, var_type)
+
+col_verification 
+
+
+# to directly get just the mismatching columns
+
+compare_df_cols(df_list, return = "mismatch")
+
+
+
+```
+
+##Looks like the columns start station id and end station id have different data types in the 2020 vs the 2022 data, lets correct them and maintain a  single data type.
+
+##Having eliminated any incongruencies, lets now merge the data 
+```{r}
+
+#changing the data type from  integer  to character for start_station_id & end_station_id for dfs - Jun_20 - Dec_20
+
+May_20 <- May_20 %>% mutate(start_station_id = as.character(start_station_id))%>% mutate(end_station_id = as.character(end_station_id))
+
+Jun_20 <- Jun_20 %>% mutate(start_station_id = as.character(start_station_id))%>% mutate(end_station_id = as.character(end_station_id))
+
+July_20 <- July_20 %>% mutate(start_station_id = as.character(start_station_id))%>% mutate(end_station_id = as.character(end_station_id))
+
+Aug_20 <- Aug_20 %>% mutate(start_station_id = as.character(start_station_id))%>% mutate(end_station_id = as.character(end_station_id))
+
+Sep_20 <- Sep_20 %>% mutate(start_station_id = as.character(start_station_id))%>% mutate(end_station_id = as.character(end_station_id))
+
+Oct_20 <- Oct_20 %>% mutate(start_station_id = as.character(start_station_id))%>% mutate(end_station_id = as.character(end_station_id))
+
+Nov_20 <- Nov_20 %>% mutate(start_station_id = as.character(start_station_id))%>% mutate(end_station_id = as.character(end_station_id))
+
+Dec_20 <- Dec_20 %>% mutate(start_station_id = as.character(start_station_id))%>% mutate(end_station_id = as.character(end_station_id))
+
+#merging data by rows
+Annual_data <- rbind(May_20, Jun_20,Jul_20,Aug_20,Sep_20,Oct_20,Nov_20, Dec_20,Jan_21,Feb_21,Mar_21,Apr_21)
+
+```
+
+##We will recheck the NAs and data types
+
+```{r examining data}
+
+str(Annual_data)
+
+colSums(is.na(Annual_data))
+
+
+```
+
+### Looks like except for the latitute and longitude columns all other columns have character type vectors. Also, there are missing values in start and end station id for over 150,000 trips which will have be to looked into. The missing values in latitute and longitude columns are not an issue as we will not be using them in this analysis.
+
+#Step 2: Wrangling the data
+
+### As the data and time are combined into same columns, we will need indvidual columns for date, time, and time differnce between trips to calculte the length of each ride. Also, we need to  obtain specific day of the week, month and date of the  rides as well.
+
+
+```{r}
+
+#create new col with just the dates
+
+Annual_data2 <- Annual_data %>% mutate(start_date = as.Date(started_at)) %>% mutate (end_date = as.Date(ended_at))
+
+# individual cols for month, date, year and week of the day
+
+Annual_data2 <- Annual_data2 %>% mutate(month_trip = format(as.Date(start_date), "%b")) %>% mutate(day_trip = format(as.Date(start_date), "%d")) %>% mutate(year_trip = format(as.Date(start_date), "%Y")) %>% mutate(day_of_week = format(as.Date(start_date), "%A")) %>% mutate(month_year = paste (month_trip, " ", year_trip))
+
+#calculating the ride lengths in hours
+
+Annual_data2 <- Annual_data2 %>% mutate(ride_length = round(difftime(ended_at, started_at, units = "hours"), digits = 2))
+
+#converting the ride length in factors to numeric
+Annual_data2 <- Annual_data2 %>% mutate(ride_length = as.numeric(as.character(ride_length)))
+
+
+#extracting time into separate column
+
+Annual_data2 <- Annual_data2 %>% mutate(start_time = format(started_at, "%T"))
+
+#extracting start time (just the hour) into separate column
+
+Annual_data2 <- Annual_data2 %>% mutate(start_time_hrs = format(started_at, "%H"))
+#creating categorical variable for time of the day
+
+Annual_data2 <- Annual_data2 %>% mutate(time_cat = cut(times(start_time) , breaks = (1/24) * c(0,5,12,16,19,24), 
+    labels = c("past_midnight", "morning", "afternoon", "evening", "night")))
+
+Annual_data2 <- Annual_data2 %>% filter(time_cat != "NA")
+
+str(Annual_data2)
+```
+
+##Lets select only columns needed for further analysis and perform basic summary statistics based on the member type (casual vs membership riders)
+
+```{r}
+
+Annual_data3 <- Annual_data2 %>% select(- c(start_lat, start_lng, end_lat, end_lng))
+
+#renaming the rideable type and member_casual columns for easier understanding
+
+Annual_data3 <- Annual_data3 %>% rename(ride_type = rideable_type,  membership_type = member_casual )
+
+summary(Annual_data3)
+
+Annual_data3%>% filter(ride_length < 0)
+```
+
+###There were 3802 rows with negative values in the ride length, these indicate rides in which th bike company removed the bikes from the docks for quality checks and did not return to the docking stations. Hence these negative values were removed from the data. 
+```{r}
+
+Annual_data3 <-  Annual_data3 %>% filter(ride_length >= 0.00 )
+```
+
+##Creating summary tables to access ride lengths and ride counts to access the riding trends and storing results in indvidual tables for further analysis.
+
+
+### Rider type vs ride length summary
+
+```{r}
+Membership_vs_ridetype <- Annual_data3 %>% group_by(membership_type, ride_type) %>% summarise(mean(ride_length), max(ride_length), min(ride_length))
+
+Membership_vs_ridetype
+                                                                                              write_csv(Membership_vs_ridetype,"Membership_vs_ridetype.csv")
+```
+
+### Rider type total number of rides based on days of the week
+
+```{r}
+
+Membership_vs_dayofweek <- Annual_data3 %>% group_by(membership_type, day_of_week) %>% summarise(number_of_rides = n(), average_duration = mean(ride_length)) %>% 
+  arrange(desc(number_of_rides),.by_group = TRUE)
+
+Membership_vs_dayofweek
+
+write_csv(Membership_vs_dayofweek,"Membership_vs_dayofweek")
+```
+
+##Earlier we saw that both start and end station names and id columns had NAs, below table shows that most of these belong to riders with electric bikes. We need further details regarding if riders were to directly drop off/pick up a bike from a charging station, results in a missing value in the station name and id
+
+```{r}
+colSums(is.na(Annual_data3))
+
+Missing_data <- Annual_data3 %>% select(start_station_name, start_station_id, end_station_name, end_station_id, ride_type, membership_type) %>% group_by(membership_type, ride_type) %>%
+  summarize(start_station_name= sum(is.na(start_station_name)),
+            end_station_name = sum(is.na(end_station_name)),
+            start_station_id =sum(is.na(start_station_id)),
+              end_station_id = sum( is.na(end_station_id)))
+
+Missing_data
+
+write_csv(Missing_data, "Missing_data.csv")
+
+```
+
+###Finding the most famous/frequently visited stations
+
+```{r}
+Start_st_data <- Annual_data3 %>% filter(start_station_name != "NA") %>% group_by( start_station_name) %>% summarise(number_of_rides = n(), average_duration = mean(ride_length)) %>%
+  arrange(desc(number_of_rides)) %>% head(n =20)
+
+Start_st_data
+
+write_csv(Start_st_data, "Start_st_data.csv")
+
+
+End_st_data <- Annual_data3 %>% filter(end_station_name != "NA") %>% group_by(end_station_name) %>% summarise(number_of_rides = n(), average_duration = mean(ride_length)) %>%
+  arrange(desc(number_of_rides)) %>% head(n =20)
+
+End_st_data 
+
+write_csv(End_st_data, "End_st_data.csv")
+
+```
+
+#### Rider type vs number of rides / week/ month
+````{r}
+#calculate number of trips on a given day in a week per month
+
+Ride_cnt_month <- Annual_data3 %>% group_by(day_of_week, month_year, membership_type) %>% summarise(total_trip_per_day = n())
+
+Ride_cnt_month
+
+write_csv(Ride_cnt_month, "Ride_cnt_month.csv")
+ 
+```
+
+##Step3: Exporting data for further analysis
+```{r}
+
+#exporting the cleaned dataframe as csv file for visual analysis in Tableau
+write_csv(Annual_data3, "Annual_data3.csv")
+
+
+```
+
